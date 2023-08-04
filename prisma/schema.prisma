@@ -1,0 +1,49 @@
+//Schema for the database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Links {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  instagram String @unique
+  twitter   String @unique
+  linkedin  String @unique
+  member    Member @relation(fields: [memberId], references: [id])
+  memberId  String @db.ObjectId @unique
+}
+
+model Member {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  email   String  @unique
+  name    String
+  role    String
+  socials Links?
+  photo   String  @unique
+  events  Event[]
+}
+
+model Project {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  thumbnail   String @db.ObjectId
+}
+
+model Event {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  event_description String
+  event_date        DateTime
+  event_photos      String[]
+  event_thumbnail   String
+  resource_person   String?
+  organizing_member Member @relation(fields: [memberId], references: [id])
+  memberId  String @db.ObjectId @unique
+}
+

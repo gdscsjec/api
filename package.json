@@ -1,0 +1,30 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "Centralized API for our GDSC-SJEC Club, enabling seamless communication and access to club functionalities.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GDSC-SJEC/api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GDSC-SJEC/api/issues"
+  },
+  "homepage": "https://github.com/GDSC-SJEC/api#readme",
+  "devDependencies": {
+    "@types/node": "^20.4.7",
+    "prisma": "^5.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.1.1",
+    "mongodb": "^5.7.0"
+  }
+}

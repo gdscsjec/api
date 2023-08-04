@@ -1,0 +1,24 @@
+[
+    {
+        "email" : "sanju@cats.com", 
+        "name"  : "sanju", 
+        "role"  : "idk",
+        "socials" : {
+            "instagram" : "instablah",
+            "twitter"   : "Twitterblah",
+            "linkedin"  : "somth"
+        },
+        "photo" : "photocdn"
+    }, 
+    {
+        "email" : "hitler@cats.com", 
+        "name"  : "hitler", 
+        "role"  : "idk",
+        "socials" : {
+            "instagram" : "instablah",
+            "twitter"   : "Twitterblah",
+            "linkedin"  : "somth"
+        },
+        "photo" : "photocdn"
+    }
+]
