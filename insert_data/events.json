@@ -1,0 +1,11 @@
+[
+    { 
+        "name"  : "Event 1", 
+        "event_description"  : "desc 1",
+        "event_date" : "date 1",
+        "event_photos": ["photo1.jpg", "photo2.jpg"], 
+      "resource_person": "John Doe",
+      "organizing_member": ""
+    }
+     
+]

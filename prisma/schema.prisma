@@ -15,7 +15,7 @@ model Links {
   twitter   String @unique
   linkedin  String @unique
   member    Member @relation(fields: [memberId], references: [id])
-  memberId  String @db.ObjectId @unique
+  memberId  String @unique @db.ObjectId
 }
 
 model Member {
@@ -32,18 +32,17 @@ model Project {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String
-  thumbnail   String @db.ObjectId
+  thumbnail   String
 }
 
 model Event {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId
   name              String
   event_description String
-  event_date        DateTime
+  event_date        String
   event_photos      String[]
   event_thumbnail   String
   resource_person   String?
-  organizing_member Member @relation(fields: [memberId], references: [id])
-  memberId  String @db.ObjectId @unique
+  organizing_member Member   @relation(fields: [memberId], references: [id])
+  memberId          String   @db.ObjectId
 }
-

@@ -1,10 +1,10 @@
 const { PrismaClient } = require('@prisma/client');
 const { ObjectId } = require('mongodb');
 const members = require('../insert_data/members.json');
-
+const projects = require('../insert_data/projects.json');
 const prisma = new PrismaClient();
 
-async function main() {
+async function member() {
   //console.log(members);
 
   for (const member of members) {
@@ -47,7 +47,7 @@ async function main() {
   console.dir(allMembers, { depth: null });
 }
 
-main()
+member()
   .catch(async (e) => {
     console.error(e);
     process.exit(1);
@@ -55,3 +55,45 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+  
+  async function project() {
+    //console.log(members);
+  
+    for (const project of projects) {
+      // Check if the member with the same email already exists
+      const existingProject = await prisma.Project.findFirst({
+        where: {
+          name: project.name,
+        },
+      });
+  
+      // If a member with the same email already exists, skip inserting this member
+      if (existingProject) {
+        console.log(`Project with name ${project.name} already exists. Skipping.`);
+        continue;
+      }
+  
+      await prisma.project.create({
+        data: {
+          name: project.name,
+          description: project.description,
+          thumbnail: project.thumbnail
+        },
+      });
+    }
+  
+    const allProjects = await prisma.Project.findMany();
+  
+    console.dir(allProjects, { depth: null });
+  }
+  
+  project()
+    .catch(async (e: any) => {
+      console.error(e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+  
