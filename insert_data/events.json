@@ -4,8 +4,19 @@
         "event_description"  : "desc 1",
         "event_date" : "date 1",
         "event_photos": ["photo1.jpg", "photo2.jpg"], 
-      "resource_person": "John Doe",
-      "organizing_member": ""
+        "event_thumbnail": "thumbnail 1",
+        "resource_person": "John Doe",
+        "organizing_member": "anish"
+    }, 
+
+    { 
+        "name"  : "Event 2", 
+        "event_description"  : "desc 2",
+        "event_date" : "date 2",
+        "event_photos": ["photo1.jpg", "photo2.jpg"],
+        "event_thumbnail": "thumbnail 2", 
+        "resource_person": "Someone Else",
+        "organizing_member": "anusha"
     }
      
 ]

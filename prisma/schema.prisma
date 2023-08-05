@@ -25,7 +25,7 @@ model Member {
   role    String
   socials Links?
   photo   String  @unique
-  events  Event[]
+  
 }
 
 model Project {
@@ -43,6 +43,6 @@ model Event {
   event_photos      String[]
   event_thumbnail   String
   resource_person   String?
-  organizing_member Member   @relation(fields: [memberId], references: [id])
-  memberId          String   @db.ObjectId
+  organizing_member String
+  
 }

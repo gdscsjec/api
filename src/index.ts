@@ -1,99 +1,210 @@
 const { PrismaClient } = require('@prisma/client');
 const { ObjectId } = require('mongodb');
-const members = require('../insert_data/members.json');
-const projects = require('../insert_data/projects.json');
+import { Request, Response } from 'express';
+
+
+const express = require('express');
 const prisma = new PrismaClient();
 
-async function member() {
-  //console.log(members);
+const app = express();
+app.use(express.json());
 
-  for (const member of members) {
-    // Check if the member with the same email already exists
-    const existingMember = await prisma.member.findFirst({
-      where: {
-        email: member.email,
-      },
-    });
+// GET Requests
 
-    // If a member with the same email already exists, skip inserting this member
-    if (existingMember) {
-      console.log(`Member with email ${member.email} already exists. Skipping.`);
-      continue;
-    }
+app.get('/', async (req: Request, res: Response) => {
+  res.send("This API fetches all the data regarding GDSC SJEC.<br><br>GET Routes:<br>/members<br>/projects<br>/events<br><br>POST Routes:<br>/submit_member<br>/submit_project<br>/submit_event");
+});
 
-    await prisma.member.create({
-      data: {
-        email: member.email,
-        name: member.name,
-        role: member.role,
-        socials: {
-          create: {
-            instagram: member.socials.instagram,
-            twitter: member.socials.twitter,
-            linkedin: member.socials.linkedin,
-          },
-        },
-        photo: member.photo,
-      },
-    });
-  }
-
+app.get('/members', async (req: Request, res: Response) => {
   const allMembers = await prisma.member.findMany({
     include: {
       socials: true,
     },
   });
 
-  console.dir(allMembers, { depth: null });
-}
+  res.send(allMembers);
+})
 
-member()
-  .catch(async (e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
+app.get('/projects', async (req: Request, res: Response) => {
+  const allProjects = await prisma.project.findMany();
+  res.send(allProjects);
+});
+
+app.get('/events', async (req: Request, res: Response) => {
+  const allEvents = await prisma.event.findMany();
+  res.send(allEvents);
+});
+
+
+//POST Requests
+
+app.post('/submit_member', async (req: Request, res: Response) => {
+
+  const newMember = req.body;
+  const existingMember = await prisma.member.findFirst({
+    where: {
+      email: newMember.email,
+    },
   });
 
-  
-  async function project() {
-    //console.log(members);
-  
-    for (const project of projects) {
-      // Check if the member with the same email already exists
-      const existingProject = await prisma.Project.findFirst({
-        where: {
-          name: project.name,
-        },
-      });
-  
-      // If a member with the same email already exists, skip inserting this member
-      if (existingProject) {
-        console.log(`Project with name ${project.name} already exists. Skipping.`);
-        continue;
-      }
-  
-      await prisma.project.create({
-        data: {
-          name: project.name,
-          description: project.description,
-          thumbnail: project.thumbnail
-        },
-      });
+  if (existingMember) {
+    res.json({ message: `Member with email ${newMember.email} already exists. Please enter a different email id.` });
+  } else {
+
+    if(!isValidPhoto(newMember.photo)) {
+      res.status(400).json({ error: 'Invalid profile photo file extension. Allowed formats: jpg, jpeg, png, webp' });
+      return;
     }
-  
-    const allProjects = await prisma.Project.findMany();
-  
-    console.dir(allProjects, { depth: null });
+    await prisma.member.create({
+      data: {
+        email: newMember.email,
+        name: newMember.name,
+        role: newMember.role,
+        socials: {
+          create: {
+            instagram: newMember.socials.instagram,
+            twitter: newMember.socials.twitter,
+            linkedin: newMember.socials.linkedin,
+          },
+        },
+        photo: newMember.photo,
+      },
+    });
+    res.json({ message: 'Member added successfully' });
   }
-  
-  project()
-    .catch(async (e: any) => {
-      console.error(e);
-      process.exit(1);
-    })
-    .finally(async () => {
-      await prisma.$disconnect();
+});
+
+app.post('/submit_project', async (req: Request, res: Response) => {
+  const newProject = req.body;
+  const existingProject = await prisma.project.findFirst({
+    where: {
+      name: newProject.name,
+    },
+  });
+
+  if (existingProject) {
+    res.json({ message: `Project with name ${newProject.name} already exists. Please add a different project.` });
+  } else {
+    if(!isValidPhoto(newProject.thumbnail)) {
+      res.status(400).json({ error: 'Invalid thumbnail photo file extension. Allowed formats: jpg, jpeg, png, webp' });
+      return;
+    }
+
+    await prisma.project.create({
+      data: {
+        name: newProject.name,
+        description: newProject.description,
+        thumbnail: newProject.thumbnail,
+      },
+    });
+    res.json({ message: 'Project added successfully' });
+  }
+});
+
+
+function isValidPhoto(photo: string): boolean {
+  return /\.(jpg|jpeg|png|webp)$/i.test(photo);
+}
+
+app.post('/submit_event', async (req: Request, res: Response) => {
+  const newEvent = req.body;
+  const eventPhotos = newEvent.event_photos || [];
+  const existingEvent = await prisma.Event.findFirst({
+    where: {
+      name: newEvent.name,
+    },
+  });
+
+  if (existingEvent) {
+    res.json({ message: `Event with name ${newEvent.name} already exists. Please add a different event.` });
+  } else {
+    if (!eventPhotos.every(isValidPhoto) || !isValidPhoto(newEvent.event_thumbnail)) {
+      res.status(400).json({ error: 'Invalid photo/thumbnail file extension. Allowed formats: jpg, jpeg, png, webp' });
+      return;
+    }
+
+    const createdEvent = await prisma.event.create({
+      data: {
+        name: newEvent.name,
+        event_description: newEvent.event_description,
+        event_date: newEvent.event_date,
+        resource_person: newEvent.resource_person,
+        event_thumbnail: newEvent.event_thumbnail,
+        organizing_member: newEvent.organizing_member,
+      },
     });
   
+    // Associate the photos with the event
+    if (eventPhotos.length > 0) {
+      for (const photo of eventPhotos) {
+        await prisma.event.update({
+          where: {
+            id: createdEvent.id,
+          },
+          data: {
+            event_photos: {
+              push: photo,
+            },
+          },
+        });
+      }
+    }
+    res.json({ message: 'Event added successfully' });
+  }
+});
+
+
+//PUT Request to update data
+
+app.put('/update_member/:id', async (req: Request, res: Response) => {
+  const memberId = req.params.id;
+  const updatedMember = req.body;
+
+  try {
+    // Check if the member exists in the database
+    const existingMember = await prisma.member.findUnique({
+      where: {
+        id: memberId,
+      },
+    });
+
+    // If the member does not exist, send a 404 response
+    if (!existingMember) {
+      return res.status(404).json({ error: 'Member not found' });
+    }
+
+    // Update the member details
+    await prisma.member.update({
+      where: {
+        id: memberId,
+      },
+      data: {
+        email: updatedMember.email,
+        name: updatedMember.name,
+        role: updatedMember.role,
+        socials: {
+          update: {
+            instagram: updatedMember.socials.instagram,
+            twitter: updatedMember.socials.twitter,
+            linkedin: updatedMember.socials.linkedin,
+          },
+        },
+        photo: updatedMember.photo,
+      },
+    });
+
+    res.json({ message: 'Member updated successfully' });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'An error occurred' });
+  } finally {
+    await prisma.$disconnect();
+  }
+});
+
+
+app.listen(3000, () => {
+  console.log("Server running on port 3000....");
+});
+
+
