@@ -1,9 +1,6 @@
-const { PrismaClient } = require('@prisma/client');
-const { ObjectId } = require('mongodb');
-import { Request, Response } from 'express';
-
-
-const express = require('express');
+import { PrismaClient } from "@prisma/client";
+import { Request, Response } from "express";
+import express from "express";
 const prisma = new PrismaClient();
 
 const app = express();
@@ -11,11 +8,13 @@ app.use(express.json());
 
 // GET Requests
 
-app.get('/', async (req: Request, res: Response) => {
-  res.send("This API fetches all the data regarding GDSC SJEC.<br><br>GET Routes:<br>/members<br>/projects<br>/events<br><br>POST Routes:<br>/submit_member<br>/submit_project<br>/submit_event");
+app.get("/", async (req: Request, res: Response) => {
+  res.send(
+    "This API fetches all the data regarding GDSC SJEC.<br><br>GET Routes:<br>/members<br>/projects<br>/events<br><br>POST Routes:<br>/submit_member<br>/submit_project<br>/submit_event"
+  );
 });
 
-app.get('/members', async (req: Request, res: Response) => {
+app.get("/members", async (req: Request, res: Response) => {
   const allMembers = await prisma.member.findMany({
     include: {
       socials: true,
@@ -23,23 +22,21 @@ app.get('/members', async (req: Request, res: Response) => {
   });
 
   res.send(allMembers);
-})
+});
 
-app.get('/projects', async (req: Request, res: Response) => {
+app.get("/projects", async (req: Request, res: Response) => {
   const allProjects = await prisma.project.findMany();
   res.send(allProjects);
 });
 
-app.get('/events', async (req: Request, res: Response) => {
+app.get("/events", async (req: Request, res: Response) => {
   const allEvents = await prisma.event.findMany();
   res.send(allEvents);
 });
 
-
 //POST Requests
 
-app.post('/submit_member', async (req: Request, res: Response) => {
-
+app.post("/submit_member", async (req: Request, res: Response) => {
   const newMember = req.body;
   const existingMember = await prisma.member.findFirst({
     where: {
@@ -48,11 +45,15 @@ app.post('/submit_member', async (req: Request, res: Response) => {
   });
 
   if (existingMember) {
-    res.json({ message: `Member with email ${newMember.email} already exists. Please enter a different email id.` });
+    res.json({
+      message: `Member with email ${newMember.email} already exists. Please enter a different email id.`,
+    });
   } else {
-
-    if(!isValidPhoto(newMember.photo)) {
-      res.status(400).json({ error: 'Invalid profile photo file extension. Allowed formats: jpg, jpeg, png, webp' });
+    if (!isValidPhoto(newMember.photo)) {
+      res.status(400).json({
+        error:
+          "Invalid profile photo file extension. Allowed formats: jpg, jpeg, png, webp",
+      });
       return;
     }
     await prisma.member.create({
@@ -70,11 +71,11 @@ app.post('/submit_member', async (req: Request, res: Response) => {
         photo: newMember.photo,
       },
     });
-    res.json({ message: 'Member added successfully' });
+    res.json({ message: "Member added successfully" });
   }
 });
 
-app.post('/submit_project', async (req: Request, res: Response) => {
+app.post("/submit_project", async (req: Request, res: Response) => {
   const newProject = req.body;
   const existingProject = await prisma.project.findFirst({
     where: {
@@ -83,10 +84,15 @@ app.post('/submit_project', async (req: Request, res: Response) => {
   });
 
   if (existingProject) {
-    res.json({ message: `Project with name ${newProject.name} already exists. Please add a different project.` });
+    res.json({
+      message: `Project with name ${newProject.name} already exists. Please add a different project.`,
+    });
   } else {
-    if(!isValidPhoto(newProject.thumbnail)) {
-      res.status(400).json({ error: 'Invalid thumbnail photo file extension. Allowed formats: jpg, jpeg, png, webp' });
+    if (!isValidPhoto(newProject.thumbnail)) {
+      res.status(400).json({
+        error:
+          "Invalid thumbnail photo file extension. Allowed formats: jpg, jpeg, png, webp",
+      });
       return;
     }
 
@@ -97,29 +103,36 @@ app.post('/submit_project', async (req: Request, res: Response) => {
         thumbnail: newProject.thumbnail,
       },
     });
-    res.json({ message: 'Project added successfully' });
+    res.json({ message: "Project added successfully" });
   }
 });
-
 
 function isValidPhoto(photo: string): boolean {
   return /\.(jpg|jpeg|png|webp)$/i.test(photo);
 }
 
-app.post('/submit_event', async (req: Request, res: Response) => {
+app.post("/submit_event", async (req: Request, res: Response) => {
   const newEvent = req.body;
   const eventPhotos = newEvent.event_photos || [];
-  const existingEvent = await prisma.Event.findFirst({
+  const existingEvent = await prisma.event.findFirst({
     where: {
       name: newEvent.name,
     },
   });
 
   if (existingEvent) {
-    res.json({ message: `Event with name ${newEvent.name} already exists. Please add a different event.` });
+    res.json({
+      message: `Event with name ${newEvent.name} already exists. Please add a different event.`,
+    });
   } else {
-    if (!eventPhotos.every(isValidPhoto) || !isValidPhoto(newEvent.event_thumbnail)) {
-      res.status(400).json({ error: 'Invalid photo/thumbnail file extension. Allowed formats: jpg, jpeg, png, webp' });
+    if (
+      !eventPhotos.every(isValidPhoto) ||
+      !isValidPhoto(newEvent.event_thumbnail)
+    ) {
+      res.status(400).json({
+        error:
+          "Invalid photo/thumbnail file extension. Allowed formats: jpg, jpeg, png, webp",
+      });
       return;
     }
 
@@ -133,7 +146,7 @@ app.post('/submit_event', async (req: Request, res: Response) => {
         organizing_member: newEvent.organizing_member,
       },
     });
-  
+
     // Associate the photos with the event
     if (eventPhotos.length > 0) {
       for (const photo of eventPhotos) {
@@ -149,14 +162,13 @@ app.post('/submit_event', async (req: Request, res: Response) => {
         });
       }
     }
-    res.json({ message: 'Event added successfully' });
+    res.json({ message: "Event added successfully" });
   }
 });
 
-
 //PUT Request to update data
 
-app.put('/update_member/:id', async (req: Request, res: Response) => {
+app.put("/update_member/:id", async (req: Request, res: Response) => {
   const memberId = req.params.id;
   const updatedMember = req.body;
 
@@ -170,7 +182,7 @@ app.put('/update_member/:id', async (req: Request, res: Response) => {
 
     // If the member does not exist, send a 404 response
     if (!existingMember) {
-      return res.status(404).json({ error: 'Member not found' });
+      return res.status(404).json({ error: "Member not found" });
     }
 
     // Update the member details
@@ -193,18 +205,15 @@ app.put('/update_member/:id', async (req: Request, res: Response) => {
       },
     });
 
-    res.json({ message: 'Member updated successfully' });
+    res.json({ message: "Member updated successfully" });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'An error occurred' });
+    res.status(500).json({ error: "An error occurred" });
   } finally {
     await prisma.$disconnect();
   }
 });
 
-
 app.listen(80, () => {
   console.log("Server running on port 80....");
 });
-
-
