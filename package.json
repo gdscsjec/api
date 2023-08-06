@@ -9,7 +9,7 @@
     "start": "node .",
     "dev": "nodemon --esm src/index.ts"
     "start": "node dist/index.js",
-    "build": "tsc && mkdirp dist && cp -R src/* dist",
+    "build": "tsc && mkdirp dist && cp -R src/* dist"
   },
   "repository": {
     "type": "git",
