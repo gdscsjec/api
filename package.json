@@ -4,6 +4,8 @@
   "description": "Centralized API for our GDSC-SJEC Club, enabling seamless communication and access to club functionalities.",
   "main": "index.js",
   "scripts": {
+    "start": "node dist/index.js",
+    "build": "tsc && mkdirp dist && cp -R src/* dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
