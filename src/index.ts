@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 
 const express = require('express');
 const prisma = new PrismaClient();
-
+const port = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
 
@@ -203,8 +203,8 @@ app.put('/update_member/:id', async (req: Request, res: Response) => {
 });
 
 
-app.listen(80, () => {
-  console.log("Server running on port 80....");
+app.listen(port, () => {
+  console.log("Server running on port 3000....");
 });
 
 
