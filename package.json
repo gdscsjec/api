@@ -2,34 +2,57 @@
   "name": "api",
   "version": "1.0.0",
   "description": "Centralized API for our GDSC-SJEC Club, enabling seamless communication and access to club functionalities.",
-  "main": "index.js",
-  "scripts": {
-    "start": "nodemon src/index.ts",
-    "build": "tsc && mkdirp dist && cp -R src/* dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "main": "./dist/index.js",
+  "type": "module",
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/GDSC-SJEC/api/issues"
   },
+  "dependencies": {
+    "@prisma/client": "^5.1.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@sapphire/eslint-config": "^5.0.1",
+    "@sapphire/prettier-config": "^2.0.0",
+    "@sapphire/ts-config": "^4.0.1",
+    "@types/eslint": "^8",
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.4.7",
+    "@types/prettier": "^3",
+    "eslint": "^8.46.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.1",
+    "prisma": "^5.1.1",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.1.6"
+  },
+  "homepage": "https://github.com/GDSC-SJEC/api#readme",
+  "imports": {
+    "#lib/*": "./dist/lib/*.js",
+    "#routes/*": "./dist/routes/*.js",
+    "#structures/*": "./dist/lib/structures/*.js",
+    "#utils/*": "./dist/lib/utils/*.js"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "packageManager": "yarn@3.6.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GDSC-SJEC/api.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/GDSC-SJEC/api/issues"
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon --esm src/index.ts",
+    "prisma": "prisma",
+    "start": "node --experimental-specifier-resolution=node dist/index.js"
   },
-  "homepage": "https://github.com/GDSC-SJEC/api#readme",
-  "devDependencies": {
-    "@types/express": "^4.17.17",
-    "@types/node": "^20.4.7",
-    "prisma": "^5.1.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+  "eslintConfig": {
+    "extends": "@sapphire"
   },
-  "dependencies": {
-    "@prisma/client": "^5.1.1",
-    "express": "^4.18.2",
-    "mongodb": "^5.7.0",
-    "nodemon": "^3.0.1"
-  }
+  "prettier": "@sapphire/prettier-config"
 }
